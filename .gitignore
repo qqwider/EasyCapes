@@ -1,0 +1,27 @@
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Node
+node_modules/
+*.log
+.env
+.env.local
+
+# Java / Gradle
+build/
+out/
+.gradle/
+run/
+runs/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Minecraft dev
+.config/
+options.txt
+logs/
+crash-reports/
