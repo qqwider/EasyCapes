@@ -27,6 +27,7 @@ public class CapeManager {
     private final Map<String, Identifier> textures = new ConcurrentHashMap<>();
     private final Path cacheDir;
     private volatile boolean showOwn = true;
+    private final java.util.Set<String> appliedLogged = ConcurrentHashMap.newKeySet();
 
     public CapeManager(CapeConfig config) {
         this.config = config;
@@ -40,6 +41,7 @@ public class CapeManager {
 
     public void setCape(String playerName, CapeData cape) {
         capes.put(playerName.toLowerCase(), cape);
+        EasyCapesMod.LOGGER.info("Cape data set for {} (hash {}, {}x{})", playerName, cape.hash(), cape.width(), cape.height());
         ensureTexture(cape);
     }
 
@@ -68,7 +70,13 @@ public class CapeManager {
             return null;
         }
         Identifier texture = textures.get(cape.hash());
-        return texture == null ? null : new EasyCapeAsset(texture);
+        if (texture == null) {
+            return null;
+        }
+        if (appliedLogged.add(playerName(player) + ":" + cape.hash())) {
+            EasyCapesMod.LOGGER.info("Applying custom cape for {}", playerName(player));
+        }
+        return new EasyCapeAsset(texture);
     }
 
     public void ensureTexture(CapeData cape) {
@@ -84,6 +92,7 @@ public class CapeManager {
             uploadTexture(cape.hash(), file);
             return;
         }
+        EasyCapesMod.LOGGER.info("Downloading cape texture {}", cape.hash());
         HttpClient http = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
                 .connectTimeout(Duration.ofSeconds(10))
@@ -125,6 +134,7 @@ public class CapeManager {
                 Identifier id = Identifier.fromNamespaceAndPath("easycapes", "cape/" + hash);
                 Minecraft.getInstance().getTextureManager().register(id, texture);
                 textures.put(hash, id);
+                EasyCapesMod.LOGGER.info("Cape texture registered: {}", id);
             } catch (IOException | RuntimeException e) {
                 EasyCapesMod.LOGGER.error("Failed to upload cape texture to GPU", e);
             }

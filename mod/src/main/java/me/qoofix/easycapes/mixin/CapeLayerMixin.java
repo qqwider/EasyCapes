@@ -23,6 +23,7 @@ public class CapeLayerMixin {
         if (custom != null) {
             PlayerSkin skin = state.skin;
             state.skin = new PlayerSkin(skin.body(), custom, skin.elytra(), skin.model(), skin.secure());
+            state.showCape = true;
         }
     }
 }
