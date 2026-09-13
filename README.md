@@ -12,6 +12,15 @@
 
 Документация протокола: [`docs/protocol.md`](docs/protocol.md)
 
+## Статус
+
+- [x] Бекенд: auth (premium + offline), REST, WebSocket, валидация PNG (2:1, до 4K, SSRF-защита), тесты (29/29)
+- [x] Мод Fabric 1.21.11: `CapeLayer` mixin, `/cape` команды, WS-клиент, кэш текстур, premium-verify — сборка зелёная
+- [x] Сайт Next.js: лендинг, аккаунты, токен, управление плащом с превью, галерея, документация
+- [x] CI/CD: GitHub Actions (ci.yml + release.yml)
+- [ ] Порты: Forge + NeoForge, версии 1.20.1–1.21.8 (см. `mod/README.md` — проверка имён API)
+- [ ] GIF-плащи (фундамент заложен: `type` в схеме/API, `meta.frames[].delayMs`, per-frame тайминг)
+
 ## Как это работает
 
 ```
