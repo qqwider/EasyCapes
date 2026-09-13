@@ -30,6 +30,7 @@ public class CapeWebSocket implements WebSocket.Listener {
     private volatile boolean wantsConnected = false;
     private volatile int backoff = 1;
     private volatile long lastPong = System.currentTimeMillis();
+    private volatile Runnable onConnected;
     private final StringBuilder buffer = new StringBuilder();
 
     public CapeWebSocket(CapeConfig config, CapeApiClient api, CapeManager capes) {
@@ -37,6 +38,10 @@ public class CapeWebSocket implements WebSocket.Listener {
         this.api = api;
         this.capes = capes;
         scheduler.scheduleAtFixedRate(this::heartbeat, 30, 30, TimeUnit.SECONDS);
+    }
+
+    public void setOnConnected(Runnable callback) {
+        this.onConnected = callback;
     }
 
     public void connect() {
@@ -59,6 +64,10 @@ public class CapeWebSocket implements WebSocket.Listener {
                         backoff = 1;
                         lastPong = System.currentTimeMillis();
                         EasyCapesMod.LOGGER.info("WebSocket connected");
+                        Runnable callback = onConnected;
+                        if (callback != null) {
+                            callback.run();
+                        }
                     }
                 });
     }
@@ -109,6 +118,7 @@ public class CapeWebSocket implements WebSocket.Listener {
             buffer.setLength(0);
             handleMessage(message);
         }
+        ws.request(1);
         return null;
     }
 

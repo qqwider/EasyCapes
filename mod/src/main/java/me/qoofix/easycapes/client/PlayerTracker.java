@@ -27,6 +27,10 @@ public class PlayerTracker {
         this.ws = ws;
     }
 
+    public void clearFetched() {
+        fetched.clear();
+    }
+
     public void tick(Minecraft client) {
         boolean inWorld = client.level != null && client.player != null;
         if (inWorld) {

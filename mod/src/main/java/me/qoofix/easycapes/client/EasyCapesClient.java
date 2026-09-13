@@ -48,6 +48,7 @@ public class EasyCapesClient implements ClientModInitializer {
         api = new CapeApiClient(config);
         ws = new CapeWebSocket(config, api, capes);
         PlayerTracker tracker = new PlayerTracker(config, capes, api, ws);
+        ws.setOnConnected(tracker::clearFetched);
 
         new ClientCommands(config, capes, api).register();
         ClientTickEvents.END_CLIENT_TICK.register(tracker::tick);

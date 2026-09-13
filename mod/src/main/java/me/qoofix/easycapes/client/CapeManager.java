@@ -28,6 +28,7 @@ public class CapeManager {
     private final Path cacheDir;
     private volatile boolean showOwn = true;
     private final java.util.Set<String> appliedLogged = ConcurrentHashMap.newKeySet();
+    private final java.util.Set<String> downloading = ConcurrentHashMap.newKeySet();
 
     public CapeManager(CapeConfig config) {
         this.config = config;
@@ -93,6 +94,9 @@ public class CapeManager {
             return;
         }
         EasyCapesMod.LOGGER.info("Downloading cape texture {}", cape.hash());
+        if (!downloading.add(cape.hash())) {
+            return;
+        }
         HttpClient http = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
                 .connectTimeout(Duration.ofSeconds(10))
@@ -102,6 +106,7 @@ public class CapeManager {
                 .GET()
                 .build();
         http.sendAsync(req, HttpResponse.BodyHandlers.ofByteArray())
+                .whenComplete((res, err) -> downloading.remove(cape.hash()))
                 .thenAccept(res -> {
                     if (res.statusCode() != 200) {
                         EasyCapesMod.LOGGER.warn("Cape texture download failed: HTTP {}", res.statusCode());
