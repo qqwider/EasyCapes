@@ -84,7 +84,10 @@ public class CapeManager {
             uploadTexture(cape.hash(), file);
             return;
         }
-        HttpClient http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
+        HttpClient http = HttpClient.newBuilder()
+                .version(HttpClient.Version.HTTP_1_1)
+                .connectTimeout(Duration.ofSeconds(10))
+                .build();
         HttpRequest req = HttpRequest.newBuilder(URI.create(cape.url()))
                 .timeout(Duration.ofSeconds(15))
                 .GET()

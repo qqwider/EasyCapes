@@ -19,6 +19,7 @@ import java.util.concurrent.CompletableFuture;
 public class CapeApiClient {
     private final CapeConfig config;
     private final HttpClient http = HttpClient.newBuilder()
+            .version(HttpClient.Version.HTTP_1_1)
             .connectTimeout(Duration.ofSeconds(10))
             .build();
 
@@ -80,6 +81,7 @@ public class CapeApiClient {
                 String code = root.has("error") ? root.getAsJsonObject("error").get("code").getAsString() : "HTTP " + res.statusCode();
                 return "ERR:" + code;
             } catch (RuntimeException e) {
+                EasyCapesMod.LOGGER.warn("checkAuth failed: status={}, body={}", res.statusCode(), res.body());
                 return "ERR:PARSE";
             }
         });
@@ -132,6 +134,7 @@ public class CapeApiClient {
                         ? root.getAsJsonObject("error").get("code").getAsString()
                         : "HTTP " + res.statusCode();
             } catch (RuntimeException e) {
+                EasyCapesMod.LOGGER.warn("request {} failed: status={}, body={}", path, res.statusCode(), res.body());
                 return "PARSE";
             }
         });
