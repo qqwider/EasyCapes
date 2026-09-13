@@ -26,7 +26,7 @@
 1. Мод генерирует `serverId` (случайный hex) и вызывает Mojang `sessionService.joinServer(uuid, accessToken, serverId)`.
 2. Мод шлёт `POST /premium/verify { name, uuid, serverId }`.
 3. Бекенд вызывает `https://sessionserver.mojang.com/session/minecraft/hasJoined?username={name}&serverId={serverId}`.
-4. Успех → профиль верифицирован как premium, смена плаща без сайта. Неудача → нужен сайт-аккаунт.
+4. Успех → профиль верифицирован как premium, бекенд возвращает **токен** → мод кэширует его и ставит плащ без сайта. Неудача → нужен сайт-аккаунт.
 
 ### Auth: offline (сайт-аккаунт)
 
@@ -67,7 +67,7 @@
 ```json
 { "name": "Notch", "uuid": "069a79f4-44e9-4726-a5be-fca90e38aaf5", "serverId": "hex" }
 ```
-→ `{ ok, cape: Cape | null }`
+→ `{ ok, user, cape: Cape | null, token }` — токен для мода (premium ставит плащ без сайта)
 
 #### `GET /capes?names=a,b,c` (без auth, ≤ 32 ников)
 → `{ ok, capes: { "a": Cape | null, ... } }` — массовая загрузка при входе в мир.

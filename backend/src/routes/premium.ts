@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
-import { NICK_RE, publicUser } from "./auth.js";
+import { NICK_RE, publicUser, issueToken } from "./auth.js";
 import { ApiError } from "../lib/errors.js";
 import { verifyMojangSession, normalizeUuid } from "../services/mojang.js";
 import { capeJson, getCapeByName } from "../lib/capes.js";
@@ -51,10 +51,12 @@ export function premiumRoutes(app: FastifyInstance): void {
       | { id: string; mc_name: string; name_lower: string; uuid: string | null; role: string; verified: number; created_at: string }
       | undefined;
     const cape = getCapeByName(app.db, nameLower);
+    const token = row ? issueToken(app, row.id) : null;
     return {
       ok: true,
       user: row ? publicUser(row as never, !!cape) : null,
       cape: cape ? capeJson(cape, app.config.externalUrl) : null,
+      token,
     };
   });
 }
