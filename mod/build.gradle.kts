@@ -51,6 +51,13 @@ loom {
         runDirectory = rootProject.file("run") // Shares the run directory between versions
         jvmArguments.add("-Dmixin.debug.export=true") // Exports transformed classes for debugging
     }
+
+    runs {
+        named("client") {
+            val devUsername = (findProperty("dev.username") as String?) ?: "Player"
+            programArgs("--username", devUsername)
+        }
+    }
 }
 
 java {
