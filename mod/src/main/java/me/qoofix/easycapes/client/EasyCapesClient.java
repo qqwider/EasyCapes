@@ -1,28 +1,65 @@
 package me.qoofix.easycapes.client;
 
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import me.qoofix.easycapes.EasyCapesMod;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.ClientAvatarEntity;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.core.ClientAsset;
 
-public class EasyCapesClient implements ClientModInitializer {
+import java.nio.file.Path;
+
+public class EasyCapesClient {
     private static EasyCapesClient instance;
 
-    private CapeConfig config;
-    private CapeManager capes;
-    private CapeApiClient api;
-    private CapeWebSocket ws;
+    private final CapeConfig config;
+    private final CapeManager capes;
+    private final CapeApiClient api;
+    private final CapeWebSocket ws;
+    private final PlayerTracker tracker;
 
-    public static CapeManager capeManager() {
-        return instance.capes;
+    private EasyCapesClient(Path configDir) {
+        this.config = CapeConfig.load(configDir);
+        this.capes = new CapeManager(config, configDir);
+        this.api = new CapeApiClient(config);
+        this.ws = new CapeWebSocket(config, api, capes);
+        this.tracker = new PlayerTracker(config, capes, api, ws);
+        this.ws.setOnConnected(tracker::clearFetched);
     }
 
-    public static CapeApiClient apiClient() {
-        return instance.api;
+    public static void init(Path configDir) {
+        if (instance != null) {
+            return;
+        }
+        instance = new EasyCapesClient(configDir);
+        EasyCapesMod.LOGGER.info("EasyCapes client ready (backend {})", instance.config.backendUrl);
+    }
+
+    public static EasyCapesClient get() {
+        return instance;
+    }
+
+    public CapeConfig config() {
+        return config;
+    }
+
+    public CapeManager capes() {
+        return capes;
+    }
+
+    public CapeApiClient api() {
+        return api;
+    }
+
+    public void tick(Minecraft client) {
+        tracker.tick(client);
+    }
+
+    public void onDisconnect() {
+        ws.disconnect();
+    }
+
+    public static CapeManager capeManager() {
+        return instance == null ? null : instance.capes;
     }
 
     public static ClientAsset.Texture capeAssetFor(AvatarRenderState state) {
@@ -38,22 +75,5 @@ public class EasyCapesClient implements ClientModInitializer {
             return null;
         }
         return self.capes.getCapeAssetFor(player);
-    }
-
-    @Override
-    public void onInitializeClient() {
-        instance = this;
-        config = CapeConfig.load();
-        capes = new CapeManager(config);
-        api = new CapeApiClient(config);
-        ws = new CapeWebSocket(config, api, capes);
-        PlayerTracker tracker = new PlayerTracker(config, capes, api, ws);
-        ws.setOnConnected(tracker::clearFetched);
-
-        new ClientCommands(config, capes, api).register();
-        ClientTickEvents.END_CLIENT_TICK.register(tracker::tick);
-        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> ws.disconnect());
-
-        me.qoofix.easycapes.EasyCapesMod.LOGGER.info("EasyCapes client ready");
     }
 }

@@ -1,9 +1,11 @@
 import type { TextureRow } from "../db.js";
 
-const MAX_CACHED_ITEMS = 64;
+const MAX_CACHED_BYTES = 32 * 1024 * 1024;
+const MAX_ITEM_BYTES = MAX_CACHED_BYTES / 2;
 
 export class TextureStore {
   private cache = new Map<string, TextureRow>();
+  private bytes = 0;
 
   constructor(private dbGet: (hash: string) => TextureRow | undefined) {}
 
@@ -16,12 +18,29 @@ export class TextureStore {
     }
     const row = this.dbGet(hash);
     if (row) {
-      this.cache.set(hash, row);
-      if (this.cache.size > MAX_CACHED_ITEMS) {
-        const oldest = this.cache.keys().next().value;
-        if (oldest !== undefined) this.cache.delete(oldest);
-      }
+      this.insert(row);
     }
     return row;
+  }
+
+  private insert(row: TextureRow): void {
+    if (row.size > MAX_ITEM_BYTES) {
+      return;
+    }
+    this.evict(row.size);
+    this.cache.set(row.hash, row);
+    this.bytes += row.size;
+  }
+
+  private evict(incomingBytes: number): void {
+    while (this.bytes + incomingBytes > MAX_CACHED_BYTES && this.cache.size > 0) {
+      const oldest = this.cache.keys().next().value;
+      if (oldest === undefined) {
+        break;
+      }
+      const evicted = this.cache.get(oldest)!;
+      this.cache.delete(oldest);
+      this.bytes -= evicted.size;
+    }
   }
 }

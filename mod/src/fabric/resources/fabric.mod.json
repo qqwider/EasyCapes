@@ -11,11 +11,8 @@
   "icon": "assets/easycapes/icon.png",
   "environment": "client",
   "entrypoints": {
-    "main": [
-      "me.qoofix.easycapes.EasyCapesMod"
-    ],
     "client": [
-      "me.qoofix.easycapes.client.EasyCapesClient"
+      "me.qoofix.easycapes.platform.fabric.FabricEasyCapes"
     ]
   },
   "mixins": [

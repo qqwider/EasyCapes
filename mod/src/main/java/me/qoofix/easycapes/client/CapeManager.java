@@ -2,7 +2,6 @@ package me.qoofix.easycapes.client;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import me.qoofix.easycapes.EasyCapesMod;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -30,9 +29,9 @@ public class CapeManager {
     private final java.util.Set<String> appliedLogged = ConcurrentHashMap.newKeySet();
     private final java.util.Set<String> downloading = ConcurrentHashMap.newKeySet();
 
-    public CapeManager(CapeConfig config) {
+    public CapeManager(CapeConfig config, Path configDir) {
         this.config = config;
-        this.cacheDir = FabricLoader.getInstance().getConfigDir().resolve("easycapes/cache");
+        this.cacheDir = configDir.resolve("easycapes/cache");
         try {
             Files.createDirectories(cacheDir);
         } catch (IOException e) {

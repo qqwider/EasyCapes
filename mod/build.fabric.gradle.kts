@@ -12,23 +12,15 @@ val requiredJava: JavaVersion = when {
     else -> JavaVersion.VERSION_17
 }
 
-// Can be used for publishing on Modrinth and Curseforge
-val compatibleVersions: List<String> = sc.properties.rawOrNull("mod", "mc_releases")
-    ?.asList().orEmpty().map { it.toString() }
-
 repositories {
     fun strictMaven(url: String, alias: String, vararg groups: String) = exclusiveContent {
         forRepository { maven(url) { name = alias } }
         filter { groups.forEach(::includeGroup) }
     }
-    strictMaven("https://www.cursemaven.com", "CurseForge", "curse.maven")
     strictMaven("https://api.modrinth.com/maven", "Modrinth", "maven.modrinth")
 }
 
 dependencies {
-    /**
-     * Fetches only the required Fabric API modules.
-     */
     fun fapi(vararg modules: String) {
         for (it in modules) modImplementation(fabricApi.module(it, sc.properties["deps.fabric_api"]))
     }
@@ -38,6 +30,13 @@ dependencies {
     loomx.applyMojangMappings()
     modImplementation("net.fabricmc:fabric-loader:${property("deps.fabric_loader")}")
     fapi("fabric-command-api-v2", "fabric-lifecycle-events-v1", "fabric-networking-api-v1")
+}
+
+sourceSets {
+    main {
+        resources.srcDir(rootProject.file("src/fabric/resources"))
+        java { exclude("**/platform/forge/**", "**/platform/neoforge/**") }
+    }
 }
 
 loom {

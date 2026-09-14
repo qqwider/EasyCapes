@@ -3,7 +3,6 @@ package me.qoofix.easycapes.client;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import me.qoofix.easycapes.EasyCapesMod;
-import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,34 +17,35 @@ public class CapeConfig {
     public String token = "";
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private transient Path path;
 
-    public static CapeConfig load() {
-        Path path = path();
+    public static CapeConfig load(Path configDir) {
+        Path path = configDir.resolve("easycapes.json");
+        CapeConfig cfg = null;
         try {
             if (Files.exists(path)) {
-                CapeConfig cfg = GSON.fromJson(Files.readString(path), CapeConfig.class);
-                if (cfg != null) {
-                    return cfg;
-                }
+                cfg = GSON.fromJson(Files.readString(path), CapeConfig.class);
             }
         } catch (IOException | RuntimeException e) {
             EasyCapesMod.LOGGER.warn("Failed to read easycapes.json, using defaults", e);
         }
-        CapeConfig cfg = new CapeConfig();
+        if (cfg == null) {
+            cfg = new CapeConfig();
+        }
+        cfg.path = path;
         cfg.save();
         return cfg;
     }
 
     public void save() {
+        if (path == null) {
+            return;
+        }
         try {
-            Files.createDirectories(path().getParent());
-            Files.writeString(path(), GSON.toJson(this));
+            Files.createDirectories(path.getParent());
+            Files.writeString(path, GSON.toJson(this));
         } catch (IOException e) {
             EasyCapesMod.LOGGER.error("Failed to save easycapes.json", e);
         }
-    }
-
-    private static Path path() {
-        return FabricLoader.getInstance().getConfigDir().resolve("easycapes.json");
     }
 }
