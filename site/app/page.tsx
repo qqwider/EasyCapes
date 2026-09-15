@@ -14,7 +14,7 @@ export default function Home() {
       <section className="card">
         <h2>Как это работает</h2>
         <ol className="muted">
-          <li>Скачай мод для своей версии и лоадера (Fabric / Forge / NeoForge)</li>
+          <li>Скачай мод для своей версии и лоадера (Fabric / NeoForge)</li>
           <li>Создай аккаунт здесь и получи токен</li>
           <li>В игре: <code>{"/cape auth <токен>"}</code></li>
           <li>В игре: <code>/cape https://ссылка-на-картинку.png</code></li>
@@ -46,7 +46,7 @@ export default function Home() {
       <section className="card">
         <h2>Поддержка</h2>
         <p className="muted">
-          Версии Minecraft: 1.20.1 — 1.21.11 · Лоадеры: Fabric, Forge, NeoForge ·
+          Версии Minecraft: 1.20.1 — 1.21.11 · Лоадеры: Fabric, NeoForge ·
           Плащи видят только игроки с модом.
         </p>
       </section>

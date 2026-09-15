@@ -6,7 +6,7 @@
 
 | Компонент | Стек | Папка |
 |---|---|---|
-| Мод | Java, Stonecutter, Fabric / Forge / NeoForge, MC 1.20.1–1.21.11 | [`mod/`](mod/) |
+| Мод | Java, Stonecutter, Fabric / NeoForge, MC 1.20.1–1.21.11 (Forge отложен — тулкиты) | [`mod/`](mod/) |
 | Бекенд | Node.js 20 + TypeScript, Fastify 5, SQLite (better-sqlite3), WebSocket | [`backend/`](backend/) |
 | Сайт | Next.js 15, React, Tailwind CSS | [`site/`](site/) |
 
@@ -15,7 +15,8 @@
 ## Статус
 
 - [x] Бекенд: auth (premium + offline), REST, WebSocket, валидация PNG (2:1, до 4K, SSRF-защита), тесты (29/29)
-- [x] Мод Fabric 1.21.11: `CapeLayer` mixin, `/cape` команды, WS-клиент, кэш текстур, premium-verify — сборка зелёная
+- [x] Мод: multi-loader инфраструктура (Split Buildscript) — Fabric и NeoForge на 1.21.11 собираются
+- [ ] Порты: версии 1.20.1–1.21.8 (playbook с таблицей отличий API в `mod/README.md`); Forge отложен (MDG-legacy/NFRT несовместимы, ForgeGradle — с Gradle 9)
 - [x] Сайт Next.js: лендинг, аккаунты, токен, управление плащом с превью, галерея, документация
 - [x] CI/CD: GitHub Actions (ci.yml + release.yml)
 - [ ] Порты: Forge + NeoForge, версии 1.20.1–1.21.8 (см. `mod/README.md` — проверка имён API)

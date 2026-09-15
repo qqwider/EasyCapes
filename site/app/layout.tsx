@@ -5,7 +5,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "EasyCapes — любые плащи по ссылке",
   description:
-    "Мод для Minecraft 1.20.1–1.21.11: устанавливайте любые плащи по ссылке. Fabric, Forge, NeoForge.",
+    "Мод для Minecraft 1.20.1–1.21.11: устанавливайте любые плащи по ссылке. Fabric и NeoForge.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
