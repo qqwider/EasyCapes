@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "me.qoofix.easycapes.mixin",
+  "compatibilityLevel": "${java}",
+  "mixins": [],
+  "client": [
+    "CapeLayerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
